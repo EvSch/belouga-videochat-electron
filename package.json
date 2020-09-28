@@ -10,7 +10,8 @@
     "lint": "eslint . && flow",
     "build": "webpack --config ./webpack.main.js --mode production && webpack --config ./webpack.renderer.js --mode production",
     "pack": "npm run build && DEBUG=electron-builder electron-builder --dir",
-    "dist": "npm run build && electron-builder",
+    "dist": "npm run build && electron-builder --publish onTagOrDraft",
+    "deploy": "npm run build && electron-builder --publish always",
     "postinstall": "patch-package && electron-builder install-app-deps",
     "watch": "webpack --config ./webpack.renderer.js --mode development --watch --watch-poll",
     "release": "build",
@@ -79,7 +80,11 @@
           "belouga-live"
         ]
       }
-    ]
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "EvSch"
+    }
   },
   "repository": {
     "type": "git",
