@@ -75,7 +75,7 @@ var DroplistGroup = /*#__PURE__*/function (_PureComponent) {
         "aria-hidden": "true",
         "data-role": "droplistGroupHeading"
       }, React.createElement(HeadingText, null, heading), elemAfter ? React.createElement(HeadingAfter, {
-        ref: function ref(r) {
+        innerRef: function innerRef(r) {
           _this2.headingElement = r;
         }
       }, elemAfter) : null) : null, children);

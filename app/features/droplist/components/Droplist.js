@@ -154,7 +154,7 @@ var Droplist = /*#__PURE__*/function (_Component) {
         "data-role": "droplistContent",
         "data-testid": testId && "".concat(testId, "--content"),
         isTall: appearance === 'tall',
-        ref: this.handleContentRef,
+        innerRef: this.handleContentRef,
         maxHeight: maxHeight
       }, isLoading ? React.createElement(SpinnerContainer, null, React.createElement(Spinner, {
         size: "small"
@@ -175,7 +175,7 @@ var Droplist = /*#__PURE__*/function (_Component) {
         onPositioned: onPositioned
       }, React.createElement(Trigger, {
         fit: shouldFitContainer,
-        ref: this.handleTriggerRef
+        innerRef: this.handleTriggerRef
       }, trigger)));
     }
   }]);

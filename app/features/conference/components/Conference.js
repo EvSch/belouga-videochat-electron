@@ -203,7 +203,7 @@ class Conference extends Component<Props, State> {
      */
     render() {
         return (
-            <Wrapper ref = { this._ref }>
+            <Wrapper innerRef = { this._ref }>
                 { this._maybeRenderLoadingIndicator() }
             </Wrapper>
         );
