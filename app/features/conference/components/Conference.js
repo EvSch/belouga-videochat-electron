@@ -45,6 +45,16 @@ type Props = {
     _name: string;
 
     /**
+     * Username of user.
+     */
+    _username: string;
+
+    /**
+     * Password of user.
+     */
+    _password: string;
+
+    /**
      * Default Jitsi Server URL.
      */
     _serverURL: string;
@@ -164,6 +174,12 @@ class Conference extends Component<Props, State> {
         if (props._name !== prevProps._name) {
             this._setName(props._name);
         }
+        if (props._username !== prevProps._username) {
+            this._setName(props._username);
+        }
+        if (props._password !== prevProps._password) {
+            this._setName(props._password);
+        }
     }
 
     /**
@@ -187,7 +203,7 @@ class Conference extends Component<Props, State> {
      */
     render() {
         return (
-            <Wrapper innerRef = { this._ref }>
+            <Wrapper ref = { this._ref }>
                 { this._maybeRenderLoadingIndicator() }
             </Wrapper>
         );
@@ -199,8 +215,30 @@ class Conference extends Component<Props, State> {
      *
      * @returns {void}
      */
-    _loadConference() {
-        const url = new URL(this._conference.room, this._conference.serverURL);
+    async _loadConference() {
+        let tokenData, token;
+        const test = await fetch('https://belouga.org/videochat/get_token/' + this._conference.room + '/0/1/' + this.props._username, {
+          cache: 'no-cache'
+        })
+        .then(response => response.json())
+        .then(data => {tokenData = data});
+
+        if (tokenData.success) {
+          token = tokenData.token;
+        } else {
+          return this._navigateToHome(
+              {
+                  error: tokenData.msg,
+                  type: 'error'
+              },
+              this._conference.room,
+              this._conference.serverURL);
+        }
+
+        const url = new URL(this._conference.room + tokenData.extraProps, this._conference.serverURL);
+        console.log(url);
+
+        //const url = new URL(this._conference.room, this._conference.serverURL);
         const roomName = url.pathname.split('/').pop();
         const host = this._conference.serverURL.replace(/https?:\/\//, '');
         const searchParameters = Object.fromEntries(url.searchParams);
@@ -212,11 +250,13 @@ class Conference extends Component<Props, State> {
 
         const configOverwrite = {
             startWithAudioMuted: this.props._startWithAudioMuted,
-            startWithVideoMuted: this.props._startWithVideoMuted
+            startWithVideoMuted: this.props._startWithVideoMuted,
+            prejoinPageEnabled: false
         };
 
         const options = {
             configOverwrite,
+            jwt: token,
             onload: this._onIframeLoad,
             parentNode: this._ref.current,
             roomName
@@ -290,6 +330,7 @@ class Conference extends Component<Props, State> {
     _navigateToHome(event: Event, room: ?string, serverURL: ?string) {
         this.props.dispatch(push('/', {
             error: event.type === 'error',
+            errorDesc: event.error,
             room,
             serverURL
         }));
@@ -405,6 +446,8 @@ function _mapStateToProps(state: Object) {
         _alwaysOnTopWindowEnabled: getSetting(state, 'alwaysOnTopWindowEnabled', true),
         _email: state.settings.email,
         _name: state.settings.name,
+        _username: state.settings.username,
+        _password: state.settings.password,
         _serverURL: state.settings.serverURL,
         _serverTimeout: state.settings.serverTimeout,
         _startWithAudioMuted: state.settings.startWithAudioMuted,

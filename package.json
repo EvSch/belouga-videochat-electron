@@ -1,25 +1,28 @@
 {
-  "name": "jitsi-meet-electron",
-  "version": "2.3.1",
-  "description": "Electron application for Jitsi Meet",
+  "name": "belouga-live",
+  "version": "1.0.0",
+  "description": "Electron application for Belouga Live",
   "main": "./build/main.js",
-  "productName": "Jitsi Meet",
+  "productName": "Belouga Live",
   "scripts": {
     "start": "webpack --config ./webpack.main.js --mode development && concurrently \"npm:watch\" \"electron ./build/main.js\"",
     "clean": "rm -rf node_modules build dist",
     "lint": "eslint . && flow",
     "build": "webpack --config ./webpack.main.js --mode production && webpack --config ./webpack.renderer.js --mode production",
-    "pack": "npm run build && electron-builder --dir",
+    "pack": "npm run build && DEBUG=electron-builder electron-builder --dir",
     "dist": "npm run build && electron-builder",
     "postinstall": "patch-package && electron-builder install-app-deps",
-    "watch": "webpack --config ./webpack.renderer.js --mode development --watch --watch-poll"
+    "watch": "webpack --config ./webpack.renderer.js --mode development --watch --watch-poll",
+    "release": "build",
+    "validate": "npm ls"
   },
   "engines": {
     "node": ">=12.0.0"
   },
   "build": {
-    "appId": "org.jitsi.jitsi-meet",
-    "productName": "Jitsi Meet",
+    "appId": "org.belouga.live",
+    "productName": "Belouga Live",
+    "compression": "maximum",
     "generateUpdatesFilesForAllChannels": true,
     "files": [
       "**/*",
@@ -27,23 +30,25 @@
       "!app",
       "!main.js"
     ],
+    "afterSign": "./notarize.js",
     "mac": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "belouga-live.${ext}",
       "category": "public.app-category.video",
       "darkModeSupport": true,
       "hardenedRuntime": true,
       "entitlements": "entitlements.mac.plist",
       "entitlementsInherit": "entitlements.mac.plist",
       "extendInfo": {
-        "NSCameraUsageDescription": "Jitsi Meet requires access to your camera in order to make video-calls.",
-        "NSMicrophoneUsageDescription": "Jitsi Meet requires access to your microphone in order to make calls (audio/video)."
-      }
+        "NSCameraUsageDescription": "Belouga Live requires access to your camera in order to share live video in rooms.",
+        "NSMicrophoneUsageDescription": "Belouga Live requires access to your microphone in order to share live audio in rooms."
+      },
+      "publish": "github"
     },
     "linux": {
-      "artifactName": "jitsi-meet-${arch}.${ext}",
+      "artifactName": "belouga-live-${arch}.${ext}",
       "category": "VideoConference;AudioVideo;Audio;Video;Network",
-      "description": "Jitsi Meet Desktop App",
-      "executableName": "jitsi-meet",
+      "description": "Belouga Live Desktop App",
+      "executableName": "belouga-live",
       "target": [
         {
           "arch": "x64",
@@ -52,7 +57,7 @@
       ]
     },
     "win": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "belouga-live.${ext}",
       "target": [
         {
           "arch": [
@@ -68,46 +73,32 @@
     },
     "protocols": [
       {
-        "name": "jitsi-protocol",
+        "name": "belouga-live-protocol",
         "role": "Viewer",
         "schemes": [
-          "jitsi-meet"
+          "belouga-live"
         ]
       }
     ]
   },
-  "pre-commit": [
-    "lint"
-  ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/jitsi/jitsi-meet-electron"
+    "url": "git://github.com/EvSch/belouga-videochat-electron"
   },
   "keywords": [
     "jingle",
     "webrtc",
     "xmpp",
     "electron",
-    "jitsi-meet"
+    "belouga",
+    "live"
   ],
-  "author": "Jitsi Team <support@jitsi.org>",
+  "author": "Alex Mathews <alex@belouga.org>",
   "readmeFilename": "README.md",
   "license": "Apache-2.0",
   "dependencies": {
-    "@atlaskit/button": "10.1.1",
-    "@atlaskit/css-reset": "3.0.5",
-    "@atlaskit/droplist": "7.0.17",
-    "@atlaskit/field-text": "7.0.19",
-    "@atlaskit/icon": "15.0.3",
-    "@atlaskit/navigation": "33.3.8",
-    "@atlaskit/onboarding": "6.1.14",
-    "@atlaskit/page": "8.0.12",
-    "@atlaskit/panel": "0.3.5",
-    "@atlaskit/spinner": "9.0.13",
-    "@atlaskit/theme": "7.0.1",
-    "@atlaskit/toggle": "5.0.14",
+    "@atlaskit/icon": "^21.1.2",
     "electron-context-menu": "2.0.1",
-    "electron-debug": "3.0.1",
     "electron-is-dev": "1.2.0",
     "electron-log": "4.1.1",
     "electron-reload": "1.5.0",
@@ -116,10 +107,8 @@
     "electron-window-state": "5.0.3",
     "history": "4.10.1",
     "i18next": "19.4.5",
-    "jitsi-meet-electron-utils": "github:jitsi/jitsi-meet-electron-utils#v2.0.7",
+    "jitsi-meet-electron-utils": "github:jitsi/jitsi-meet-electron-utils#v2.0.10",
     "js-utils": "github:jitsi/js-utils#cf11996bd866fdb47326c59a5d3bc24be17282d4",
-    "moment": "2.23.0",
-    "mousetrap": "1.6.2",
     "react": "16.8.0",
     "react-dom": "16.8.0",
     "react-i18next": "11.5.1",
@@ -128,26 +117,47 @@
     "redux": "4.0.1",
     "redux-logger": "3.0.6",
     "redux-persist": "5.10.0",
-    "redux-persist-electron-storage": "2.0.0",
-    "source-map-support": "0.5.16",
-    "styled-components": "3.4.0"
+    "redux-persist-electron-storage": "2.0.0"
   },
   "devDependencies": {
+    "@atlaskit/avatar": "^20.0.4",
+    "@atlaskit/button": "^15.0",
+    "@atlaskit/css-reset": "^6.0.1",
+    "@atlaskit/dropdown-menu": "^10.0.6",
+    "@atlaskit/droplist": "^11.0.4",
+    "@atlaskit/form": "^8.1.4",
+    "@atlaskit/item": "^12.0.2",
+    "@atlaskit/layer": "^9.0.2",
+    "@atlaskit/modal-dialog": "^11.2.1",
+    "@atlaskit/navigation": "^37.0.2",
+    "@atlaskit/onboarding": "^10.1.6",
+    "@atlaskit/page": "^12.0.1",
+    "@atlaskit/panel": "^0.4.2",
+    "@atlaskit/size-detector": "^10.0.2",
+    "@atlaskit/spinner": "^15.0.3",
+    "@atlaskit/textarea": "^3.0.3",
+    "@atlaskit/textfield": "^4.0.7",
+    "@atlaskit/theme": "^10.0.5",
+    "@atlaskit/toggle": "^11.0.1",
     "@babel/core": "7.9.0",
     "@babel/plugin-proposal-class-properties": "7.8.3",
     "@babel/plugin-proposal-export-namespace-from": "7.8.3",
     "@babel/plugin-transform-flow-strip-types": "7.9.0",
+    "@babel/plugin-transform-runtime": "7.11.5",
     "@babel/preset-env": "7.9.0",
     "@babel/preset-flow": "7.9.0",
     "@babel/preset-react": "7.9.4",
     "@svgr/webpack": "5.4.0",
     "babel-eslint": "10.0.3",
     "babel-loader": "8.1.0",
+    "chromatism": "^2.6.0",
     "concurrently": "5.1.0",
     "css-loader": "3.5.0",
     "devtron": "1.4.0",
     "electron": "10.1.1",
     "electron-builder": "22.7.0",
+    "electron-debug": "3.0.1",
+    "electron-notarize": "1.0.0",
     "electron-react-devtools": "0.5.3",
     "eslint": "6.5.1",
     "eslint-config-jitsi": "github:jitsi/eslint-config-jitsi#1.0.2",
@@ -158,8 +168,15 @@
     "file-loader": "6.0.0",
     "flow-bin": "0.109.0",
     "html-webpack-plugin": "4.0.4",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.set": "^4.3.2",
+    "mac-screen-capture-permissions": "EvSch/mac-screen-capture-permissions",
+    "moment": "2.23.0",
+    "mousetrap": "1.6.2",
     "patch-package": "6.2.2",
+    "source-map-support": "0.5.16",
     "style-loader": "1.1.3",
+    "styled-components": "3.4.0",
     "webpack": "4.42.1",
     "webpack-cli": "3.3.11"
   }

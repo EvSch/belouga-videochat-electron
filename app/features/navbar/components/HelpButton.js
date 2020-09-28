@@ -1,14 +1,22 @@
 // @flow
 
-import Droplist, { Item, Group } from '@atlaskit/droplist';
+import Droplist, { Item, Group } from '../../droplist';
 import HelpIcon from '@atlaskit/icon/glyph/question-circle';
-
+import type { Dispatch } from 'redux';
+import { compose } from 'redux';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-
+import { connect } from 'react-redux';
+import { openDialog } from '../../dialog';
+import { SpotlightTarget } from '@atlaskit/onboarding';
 import config from '../../config';
 import { openExternalLink } from '../../utils';
 import { version } from '../../../../package.json';
+import { ContactModal } from './ContactModal';
+
+type Props = {
+  dispatch: Dispatch<*>;
+}
 
 type State = {
 
@@ -21,14 +29,14 @@ type State = {
 /**
  * Help button for Navigation Bar.
  */
-class HelpButton extends Component<*, State> {
+class HelpButton extends Component<Props, State> {
     /**
      * Initializes a new {@code HelpButton} instance.
      *
      * @inheritdoc
      */
-    constructor() {
-        super();
+    constructor(props: Props) {
+        super(props);
 
         this.state = {
             droplistOpen: false
@@ -43,7 +51,8 @@ class HelpButton extends Component<*, State> {
         this._onTermsClick
             = openExternalLink.bind(undefined, config.termsAndConditionsURL);
         this._onSendFeedbackClick
-            = openExternalLink.bind(undefined, config.feedbackURL);
+            =  this._onSendFeedbackClick.bind(this);
+            //openExternalLink.bind(undefined, config.feedbackURL);
     }
 
     _onAboutClick: (*) => void;
@@ -82,6 +91,11 @@ class HelpButton extends Component<*, State> {
 
     _onSendFeedbackClick: (*) => void;
 
+    _onSendFeedbackClick() {
+      const {  dispatch } = this.props;
+      dispatch(openDialog(withTranslation()(connect()(ContactModal))));
+    };
+
     /**
      * Render function of component.
      *
@@ -91,6 +105,8 @@ class HelpButton extends Component<*, State> {
         const { t } = this.props;
 
         return (
+          <SpotlightTarget
+              name = 'help-menu-button'>
             <Droplist
                 isOpen = { this.state.droplistOpen }
                 onClick = { this._onIconClick }
@@ -110,16 +126,14 @@ class HelpButton extends Component<*, State> {
                     <Item onActivate = { this._onAboutClick }>
                         { t('aboutLink') }
                     </Item>
-                    <Item onActivate = { this._onSourceClick }>
-                        { t('sourceLink') }
-                    </Item>
                     <Item>
                         { t('versionLabel', { version }) }
                     </Item>
                 </Group>
             </Droplist>
+          </SpotlightTarget>
         );
     }
 }
 
-export default withTranslation()(HelpButton);
+export default compose(connect(), withTranslation())(HelpButton);

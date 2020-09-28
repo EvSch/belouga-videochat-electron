@@ -62,5 +62,3 @@ function _mapStateToProps(state: Object) {
 }
 
 export default connect(_mapStateToProps)(Onboarding);
-
-

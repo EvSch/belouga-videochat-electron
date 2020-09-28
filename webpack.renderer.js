@@ -58,6 +58,7 @@ module.exports = {
                     { loader: 'style-loader' },
                     { loader: 'css-loader' }
                 ],
+                //use: 'file-loader',
                 test: /\.css$/
             },
             {
@@ -85,4 +86,3 @@ module.exports = {
         ]
     }
 };
-

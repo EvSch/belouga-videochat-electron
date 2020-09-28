@@ -1,12 +1,13 @@
 // @flow
 import { OnboardingModal, OnboardingSpotlight } from './components';
 import { openDrawer, closeDrawer } from '../navbar';
+import { startOnboarding } from './';
 import { SettingsDrawer } from '../settings';
 
 export const advenaceSettingsSteps = [
-    'server-setting',
     'server-timeout',
-    'always-on-top-window'
+    'always-on-top-window',
+    'invisible-mode'
 ];
 
 export const onboardingSteps = {
@@ -17,10 +18,12 @@ export const onboardingSteps = {
     ],
     'settings-drawer': [
         'name-setting',
-        'email-setting',
         'start-muted-toggles',
-        ...advenaceSettingsSteps
-    ]
+        //...advenaceSettingsSteps,
+    ],
+    'welcome-page2': [
+        'help-menu-button'
+    ],
 };
 
 export const onboardingComponents = {
@@ -44,23 +47,15 @@ export const onboardingComponents = {
         target: 'name-setting',
         text: 'onboarding.nameSetting'
     },
-    'email-setting': {
-        type: OnboardingSpotlight,
-        dialogPlacement: 'top right',
-        target: 'email-setting',
-        text: 'onboarding.emailSetting'
-    },
     'start-muted-toggles': {
         type: OnboardingSpotlight,
         dialogPlacement: 'top right',
         target: 'start-muted-toggles',
-        text: 'onboarding.startMutedToggles'
-    },
-    'server-setting': {
-        type: OnboardingSpotlight,
-        dialogPlacement: 'top right',
-        target: 'server-setting',
-        text: 'onboarding.serverSetting'
+        text: 'onboarding.startMutedToggles',
+        onNext: (props: OnboardingSpotlight.props) => setTimeout(() => {
+            props.dispatch(closeDrawer());
+            props.dispatch(startOnboarding('welcome-page2'))
+        }, 300)
     },
     'server-timeout': {
         type: OnboardingSpotlight,
@@ -73,8 +68,20 @@ export const onboardingComponents = {
         dialogPlacement: 'top right',
         target: 'always-on-top-window',
         text: 'onboarding.alwaysOnTop',
+    },
+    'invisible-mode': {
+        type: OnboardingSpotlight,
+        dialogPlacement: 'top right',
+        target: 'invisible-mode',
+        text: 'onboarding.invisibleMode',
         onNext: (props: OnboardingSpotlight.props) => setTimeout(() => {
             props.dispatch(closeDrawer());
         }, 300)
+    },
+    'help-menu-button': {
+        type: OnboardingSpotlight,
+        dialogPlacement: 'top right',
+        target: 'help-menu-button',
+        text: 'onboarding.helpButton',
     }
 };

@@ -5,12 +5,46 @@ import {
     SET_AUDIO_MUTED,
     SET_EMAIL,
     SET_NAME,
+    SET_USERNAME,
+    SET_PASSWORD,
     SET_SERVER_URL,
     SET_SERVER_TIMEOUT,
-    SET_VIDEO_MUTED
+    SET_VIDEO_MUTED,
+    SET_LOGGED_IN,
+    SET_LOGIN_ERROR,
+    SET_DISPLAY_ADVANCED_SETTINGS,
+    SET_DEFAULT_LIVE_URL
 } from './actionTypes';
 
 import { normalizeServerURL } from '../utils';
+
+export function login(isLoggedIn: boolean) {
+  return {
+      type: SET_LOGGED_IN,
+      isLoggedIn
+  };
+}
+
+export function loginError(showLoginError: boolean) {
+  return {
+      type: SET_LOGIN_ERROR,
+      showLoginError
+  };
+}
+
+export function showAdvanced(showAdvancedSettings: boolean) {
+  return {
+      type: SET_DISPLAY_ADVANCED_SETTINGS,
+      showAdvancedSettings
+  };
+}
+
+export function setLiveUrl(liveUrl: string) {
+  return {
+      type: SET_DEFAULT_LIVE_URL,
+      liveUrl
+  };
+}
 
 /**
  * Set the email of the user.
@@ -25,6 +59,38 @@ export function setEmail(email: string) {
     return {
         type: SET_EMAIL,
         email
+    };
+}
+
+/**
+ * Set the username of the user.
+ *
+ * @param {string} username - Username of the user.
+ * @returns {{
+ *     type: SET_USERNAME,
+ *     email: string
+ * }}
+ */
+export function setUsername(username: string) {
+    return {
+        type: SET_USERNAME,
+        username
+    };
+}
+
+/**
+ * Set the password of the user.
+ *
+ * @param {string} password - Password of the user.
+ * @returns {{
+ *     type: SET_PASSWORD,
+ *     email: string
+ * }}
+ */
+export function setPassword(password: string) {
+    return {
+        type: SET_PASSWORD,
+        password
     };
 }
 

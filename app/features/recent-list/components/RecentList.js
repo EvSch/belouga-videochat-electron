@@ -89,9 +89,9 @@ class RecentList extends Component<Props, *> {
                 <ConferenceTitle>
                     { conference.room }
                 </ConferenceTitle>
-                <TruncatedText>
+                {/*<TruncatedText>
                     { this._renderServerURL(conference.serverURL) }
-                </TruncatedText>
+                </TruncatedText> */}
                 <TruncatedText>
                     { this._renderStartTime(conference) }
                 </TruncatedText>

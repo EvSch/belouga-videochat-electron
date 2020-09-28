@@ -3,8 +3,8 @@
 /**
  * AtlasKit components will deflect from appearance if css-reset is not present.
  */
-import '@atlaskit/css-reset';
-
+//import '@atlaskit/css-reset';
+import './reset.min.css';
 import Spinner from '@atlaskit/spinner';
 import { SpotlightManager } from '@atlaskit/onboarding';
 

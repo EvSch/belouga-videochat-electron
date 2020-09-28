@@ -45,14 +45,20 @@ type Props = {
 
 const OnboardingSpotlight = (props: Props) => {
     const { t } = useTranslation();
-
+    console.log(props.dialogPlacement)
+    console.log(props.target)
     return (
         <Spotlight
             actions = { [
                 {
                     onClick: () => {
-                        props.dispatch(continueOnboarding());
                         props.onNext && props.onNext(props);
+                        //if (props.onNext) {
+                          //setTimeout(() => {
+                            props.dispatch(continueOnboarding());
+                        //}, 500);
+                        //}
+
                     },
                     text: t('onboarding.next')
                 }

@@ -24,4 +24,3 @@ export default class Logo extends Component<*> {
         );
     }
 }
-

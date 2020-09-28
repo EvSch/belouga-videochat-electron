@@ -7,8 +7,10 @@ const {
     ipcMain
 } = require('electron');
 const contextMenu = require('electron-context-menu');
-const debug = require('electron-debug');
 const isDev = require('electron-is-dev');
+const debug = (() => (
+  isDev ? require('electron-debug') : null
+))();
 const { autoUpdater } = require('electron-updater');
 const windowStateKeeper = require('electron-window-state');
 const {
@@ -23,7 +25,7 @@ const URL = require('url');
 const config = require('./app/features/config');
 const { openExternalLink } = require('./app/features/utils/openExternalLink');
 
-const showDevTools = Boolean(process.env.SHOW_DEV_TOOLS) || (process.argv.indexOf('--show-dev-tools') > -1);
+const showDevTools = Boolean(process.env.SHOW_DEV_TOOLS) || (process.argv.indexOf('--show-dev-tools') > -1) || isDev;
 
 // We need this because of https://github.com/electron/electron/issues/18214
 app.commandLine.appendSwitch('disable-site-isolation-trials');
@@ -42,15 +44,8 @@ contextMenu({
     showCopyImageAddress: false,
     showSaveImage: false,
     showSaveImageAs: false,
-    showInspectElement: true,
+    showInspectElement: showDevTools,
     showServices: false
-});
-
-// Enable DevTools also on release builds to help troubleshoot issues. Don't
-// show them automatically though.
-debug({
-    isEnabled: true,
-    showDevTools
 });
 
 /**
@@ -58,6 +53,10 @@ debug({
  * - Enable automatic reloads
  */
 if (isDev) {
+    debug({
+      isEnabled: true,
+      showDevTools
+    });
     require('electron-reload')(path.join(__dirname, 'build'));
 }
 

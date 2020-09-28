@@ -1,8 +1,6 @@
 // @flow
 
-import { FieldTextStateless } from '@atlaskit/field-text';
-
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -11,6 +9,8 @@ import type { Dispatch } from 'redux';
 import config from '../../config';
 
 import { setServerTimeout } from '../actions';
+import TextField from '@atlaskit/textfield';
+import { Field, ErrorMessage } from '@atlaskit/form';
 import { Form } from '../styled';
 
 type Props = {
@@ -75,18 +75,22 @@ class ServerTimeoutField extends Component<Props, State> {
 
         return (
             <Form onSubmit = { this._onServerTimeoutSubmit }>
-                <FieldTextStateless
-                    invalidMessage
-                        = { t('settings.invalidServerTimeout') }
-                    isInvalid = { !this.state.isValid }
-                    isValidationHidden = { this.state.isValid }
-                    label = { t('settings.serverTimeout') }
-                    onBlur = { this._onServerTimeoutSubmit }
-                    onChange = { this._onServerTimeoutChange }
-                    placeholder = { config.defaultServerTimeout }
-                    shouldFitContainer = { true }
-                    type = 'number'
-                    value = { this.state.serverTimeout } />
+                <Field
+                name="serverTimeout"
+                label = { t('settings.serverTimeout') }
+              >
+                {({ fieldProps, error, valid }) => (
+                  <Fragment>
+                    <TextField {...fieldProps} onChange = { this._onServerTimeoutChange } onBlur = { this._onServerTimeoutSubmit }
+                    placeholder = { config.defaultServerTimeout } type = 'number' defaultValue = { this.state.serverTimeout } />
+                    {!this.state.isValid && (
+                      <ErrorMessage>
+                        { t('settings.invalidServerTimeout') }
+                      </ErrorMessage>
+                    )}
+                  </Fragment>
+                )}
+              </Field>
             </Form>
         );
     }

@@ -1,7 +1,7 @@
 
 // @flow
 
-import Navigation, { AkGlobalItem } from '@atlaskit/navigation';
+import Navigation, { AkGlobalItem } from '../../navigation';
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -31,9 +31,7 @@ class Navbar extends Component<Props, *> {
      */
     _getPrimaryActions() {
         return [
-            <AkGlobalItem key = { 0 }>
-                <SettingsButton />
-            </AkGlobalItem>
+            <SettingsButton />
         ];
     }
 
@@ -68,7 +66,8 @@ class Navbar extends Component<Props, *> {
                 globalSecondaryActions = { this._getSecondaryActions() }
                 isElectronMac = { isElectronMac() }
                 isOpen = { false }
-                isResizeable = { false } />
+                isResizeable = { false } >
+            </Navigation>
         );
     }
 }

@@ -1,8 +1,6 @@
 // @flow
 
-import { FieldTextStateless } from '@atlaskit/field-text';
-
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import type { Dispatch } from 'redux';
@@ -12,6 +10,11 @@ import config from '../../config';
 import { getExternalApiURL } from '../../utils';
 
 import { setServerURL } from '../actions';
+import TextField from '@atlaskit/textfield';
+import {
+  ErrorMessage,
+  Field,
+} from '@atlaskit/form';
 import { Form } from '../styled';
 
 type Props = {
@@ -76,17 +79,22 @@ class ServerURLField extends Component<Props, State> {
 
         return (
             <Form onSubmit = { this._onServerURLSubmit }>
-                <FieldTextStateless
-                    invalidMessage = { t('settings.invalidServer') }
-                    isInvalid = { !this.state.isValid }
-                    isValidationHidden = { this.state.isValid }
-                    label = { t('settings.serverUrl') }
-                    onBlur = { this._onServerURLSubmit }
-                    onChange = { this._onServerURLChange }
-                    placeholder = { config.defaultServerURL }
-                    shouldFitContainer = { true }
-                    type = 'text'
-                    value = { this.state.serverURL } />
+                <Field
+                name="serverURL"
+                label = { t('settings.serverUrl') }
+              >
+                {({ fieldProps, error, valid }) => (
+                  <Fragment>
+                    <TextField {...fieldProps} onChange = { this._onServerURLChange } onBlur = { this._onServerURLSubmit }
+                    placeholder = { config.defaultServerURL } defaultValue = { this.state.serverURL }/>
+                    {!this.state.isValid && (
+                      <ErrorMessage>
+                        { t('settings.invalidServer') }
+                      </ErrorMessage>
+                    )}
+                  </Fragment>
+                )}
+              </Field>
             </Form>
         );
     }

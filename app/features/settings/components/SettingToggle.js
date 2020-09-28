@@ -56,7 +56,7 @@ function SettingToggle(props: Object) {
 
     return (
         <ToggleWithLabel
-            isDefaultChecked = { props.value }
+            defaultChecked = { props.value }
             label = { props.label }
             onChange = { onChange }
             value = { props.value } />

@@ -1,8 +1,9 @@
 // @flow
 
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
+import { AkGlobalItem } from '../../navigation';
 import { SpotlightTarget } from '@atlaskit/onboarding';
-
+import Button from '@atlaskit/button';
 import * as Mousetrap from 'mousetrap';
 import 'mousetrap/plugins/global-bind/mousetrap-global-bind';
 
@@ -67,11 +68,12 @@ class SettingsButton extends Component<Props, *> {
      */
     render() {
         return (
+          <AkGlobalItem key = { 0 } onClick = { this._onIconClick } >
             <SpotlightTarget
                 name = 'settings-drawer-button'>
-                <SettingsIcon
-                    onClick = { this._onIconClick } />
+                <SettingsIcon />
             </SpotlightTarget>
+          </AkGlobalItem>
         );
     }
 
@@ -83,6 +85,7 @@ class SettingsButton extends Component<Props, *> {
      * @returns {void}
      */
     _onIconClick() {
+        console.log("CLICKING");
         this.props.dispatch(openDrawer(SettingsDrawer));
     }
 }

@@ -40,6 +40,26 @@ export const SET_EMAIL = Symbol('SET_EMAIL');
 export const SET_NAME = Symbol('SET_NAME');
 
 /**
+ * The type of (redux) action that sets the email of the user.
+ *
+ * @type {
+ *     type: SET_USERNAME,
+ *     email: string
+ * }
+ */
+export const SET_USERNAME = Symbol('SET_USERNAME');
+
+/**
+ * The type of (redux) action that sets the name of the user.
+ *
+ * @type {
+ *     type: SET_PASSWORD,
+ *     name: string
+ * }
+ */
+export const SET_PASSWORD = Symbol('SET_PASSWORD');
+
+/**
  * The type of (redux) action that sets the Server URL.
  *
  * @type {
@@ -68,3 +88,8 @@ export const SET_SERVER_TIMEOUT = Symbol('SET_SERVER_TIMEOUT');
  * }
  */
 export const SET_VIDEO_MUTED = Symbol('SET_VIDEO_MUTED');
+
+export const SET_LOGGED_IN = Symbol('SET_LOGGED_IN');
+export const SET_LOGIN_ERROR = Symbol('SET_LOGIN_ERROR');
+export const SET_DISPLAY_ADVANCED_SETTINGS = Symbol('SET_DISPLAY_ADVANCED_SETTINGS');
+export const SET_DEFAULT_LIVE_URL = Symbol('SET_DEFAULT_LIVE_URL');

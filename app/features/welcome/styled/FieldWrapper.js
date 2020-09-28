@@ -7,4 +7,5 @@ export default styled.div`
     display: flex;
     justify-content: space-between;
     magin: auto;
+    margin-top: 0.5em;
 `;

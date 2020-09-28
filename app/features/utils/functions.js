@@ -79,6 +79,8 @@ export function createConferenceObjectFromURL(inputURL: string) {
 
         // Normalize the server URL.
         serverURL = normalizeServerURL(serverURL);
+
+        console.log(serverURL);
     }
 
     // Don't navigate if no room was specified.
