@@ -4,13 +4,15 @@ const {
     BrowserWindow,
     Menu,
     app,
-    ipcMain
+    ipcMain,
+    nativeTheme
 } = require('electron');
 const contextMenu = require('electron-context-menu');
 const isDev = require('electron-is-dev');
 const debug = (() => (
   isDev ? require('electron-debug') : null
 ))();
+const ProgressBar = require('electron-progressbar');
 const { autoUpdater } = require('electron-updater');
 const windowStateKeeper = require('electron-window-state');
 const {
@@ -35,7 +37,7 @@ app.allowRendererProcessReuse = false;
 
 autoUpdater.logger = require('electron-log');
 autoUpdater.logger.transports.file.level = 'info';
-
+autoUpdater.autoDownload = false;
 // Enable context menu so things like copy and paste work in input fields.
 contextMenu({
     showLookUpSelection: false,
@@ -73,6 +75,7 @@ let mainWindow = null;
 const appProtocolSurplus = `${config.default.appProtocolPrefix}://`;
 let rendererReady = false;
 let protocolDataForFrontApp = null;
+let firstLaunch = true;
 
 
 /**
@@ -145,15 +148,23 @@ function setApplicationMenu() {
     }
 }
 
+function launchMainWindow(mainWindow, indexURL) {
+    mainWindow.loadURL(indexURL);
+    initPopupsConfigurationMain(mainWindow);
+    setupAlwaysOnTopMain(mainWindow);
+    setupPowerMonitorMain(mainWindow);
+    setupScreenSharingMain(mainWindow, config.default.appName);
+}
+
 /**
  * Opens new window with index.html(Jitsi Meet is loaded in iframe there).
  */
-function createJitsiMeetWindow() {
+async function createJitsiMeetWindow() {
     // Application menu.
     setApplicationMenu();
 
     // Check for Updates.
-    autoUpdater.checkForUpdatesAndNotify();
+    //autoUpdater.checkForUpdatesAndNotify();
 
     // Load the previous window state with fallback to defaults.
     const windowState = windowStateKeeper({
@@ -195,12 +206,6 @@ function createJitsiMeetWindow() {
 
     mainWindow = new BrowserWindow(options);
     windowState.manage(mainWindow);
-    mainWindow.loadURL(indexURL);
-
-    initPopupsConfigurationMain(mainWindow);
-    setupAlwaysOnTopMain(mainWindow);
-    setupPowerMonitorMain(mainWindow);
-    setupScreenSharingMain(mainWindow, config.default.appName);
 
     mainWindow.webContents.on('new-window', (event, url, frameName) => {
         const target = getPopupTarget(url, frameName);
@@ -216,6 +221,76 @@ function createJitsiMeetWindow() {
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
     });
+
+    if (firstLaunch) {
+      firstLaunch = false;
+      var progressBar = new ProgressBar({
+      indeterminate: false,
+      text: 'Checking for update...',
+      title: 'Belouga Live Auto-Update',
+      detail: 'Belouga Live Auto-Update',
+      style: {
+        text: {color: '#00bbf1'},
+        detail: {color: '#00bbf1'},
+        value: {'background-color': '#00bbf1'}
+      },
+      browserWindow: {
+        icon: path.resolve(basePath, './resources/icon.ico'), // path to the icon file
+        webPreferences: {
+            nodeIntegration: true,
+            worldSafeExecuteJavaScript: true
+        },
+        vibrancy: 'popover',
+        visualEffectState: 'active',
+        show: false
+      }
+    });
+    progressBar
+      .on('ready', function() {
+        if (process.platform == 'darwin') {
+          var colorAlpha = nativeTheme.shouldUseDarkColors ? '#00000040' : '#ffffff80';
+          progressBar._window.webContents.insertCSS('body {background-color: ' + colorAlpha + ';}');
+        }
+      })
+      .on('completed', function() {
+        console.info(`completed...`);
+        setImmediate(() => autoUpdater.quitAndInstall());
+      })
+      .on('aborted', function(value) {
+        console.info(`aborted... ${value}`);
+        mainWindow.setProgressBar(-1);
+        launchMainWindow(mainWindow, indexURL);
+      });
+
+      autoUpdater.on('update-not-available', () => {
+        progressBar.close();
+      });
+
+      autoUpdater.on('update-available', (updateInfo) => {
+        progressBar._window.show();
+        progressBar.text = 'Update found! Starting download...';
+        autoUpdater.downloadUpdate();
+      });
+
+      autoUpdater.on('download-progress', (progressInfo) => {
+        progressBar.text = 'Downloading Update...';
+        progressBar.value = progressInfo.percent;
+        progressBar.detail = `${(progressInfo.transferred/1000000).toFixed(1)}M of ${(progressInfo.total/1000000).toFixed(1)}M downloaded at ${(progressInfo.bytesPerSecond/1024).toFixed(0)}KB/s`;
+      });
+
+      autoUpdater.on('update-downloaded', (updateInfo) => {
+        progressBar.text = 'Update downloaded! Installing...';
+        progressBar.setCompleted();
+      });
+
+
+      await autoUpdater.checkForUpdates().catch((e) => {
+        progressBar.close()
+      });
+
+    } else {
+      launchMainWindow(mainWindow, indexURL);
+    }
 
     /**
      * When someone tries to enter something like jitsi-meet://test

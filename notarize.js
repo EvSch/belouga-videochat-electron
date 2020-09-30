@@ -5,7 +5,7 @@ exports.default = async function notarizing(context) {
   if (electronPlatformName !== 'darwin') {
     return;
   }
-
+  console.log("Notarizing app for OS X");
   const appName = context.packager.appInfo.productFilename;
   return await notarize({
     appBundleId: 'org.belouga.live',
