@@ -224,28 +224,34 @@ async function createJitsiMeetWindow() {
 
     if (firstLaunch) {
       firstLaunch = false;
-      var progressBar = new ProgressBar({
-      indeterminate: false,
-      text: 'Checking for update...',
-      title: 'Belouga Live Auto-Update',
-      detail: 'Belouga Live Auto-Update',
-      style: {
-        text: {color: '#00bbf1'},
-        detail: {color: '#00bbf1'},
-        value: {'background-color': '#00bbf1'}
-      },
-      browserWindow: {
-        icon: path.resolve(basePath, './resources/icon.ico'), // path to the icon file
-        webPreferences: {
+      const progressBarOpts = {
+        indeterminate: false,
+        text: 'Checking for update...',
+        title: 'Belouga Live Auto-Update',
+        detail: 'Belouga Live Auto-Update',
+        style: {
+          value: {'background-color': '#00bbf1'}
+        },
+        browserWindow: {
+          icon: path.resolve(basePath, './resources/icon.ico'), // path to the icon file
+          webPreferences: {
             nodeIntegration: true,
             worldSafeExecuteJavaScript: true
-        },
-        vibrancy: 'popover',
-        visualEffectState: 'active',
-        show: false
+          },
+          vibrancy: 'popover',
+          visualEffectState: 'active',
+          show: false
+        }
+      };
+      if (process.platform == 'darwin') {
+        progressBarOpts.style = {
+          text: {color: '#00bbf1'},
+          detail: {color: '#00bbf1'},
+          value: {'background-color': '#00bbf1'}
+        };
       }
-    });
-    progressBar
+      var progressBar = new ProgressBar(progressBarOpts);
+      progressBar
       .on('ready', function() {
         if (process.platform == 'darwin') {
           var colorAlpha = nativeTheme.shouldUseDarkColors ? '#00000040' : '#ffffff80';
