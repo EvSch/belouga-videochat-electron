@@ -6,9 +6,8 @@ const moment = require('moment');
 exports.default = async function notarizing(context) {
   const {file, target, packager} = context;
   if (packager.platform.name === 'mac' && target.name === 'pkg') {
-    console.log("This is a package! Notarizing install package");
+    console.log("This is an installer package!");
   } else {
-    console.log("Quitting! " + target.name);
     return;
   }
 
@@ -28,5 +27,5 @@ exports.default = async function notarizing(context) {
   const finTime = new moment();
   const totalTime = moment.duration(startTime.diff(finTime)).humanize();
   console.log("Notarization completed in: " + totalTime);
-  execSync(`stapler staple belouga-live.pkg`);
+  execSync(`stapler staple ${target.outDir}/belouga-live.pkg`);
 };
