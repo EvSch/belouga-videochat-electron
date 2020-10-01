@@ -1,6 +1,6 @@
 {
   "name": "belouga-live",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Electron application for Belouga Live",
   "main": "./build/main.js",
   "productName": "Belouga Live",
