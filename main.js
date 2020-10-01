@@ -229,6 +229,7 @@ async function createJitsiMeetWindow() {
         text: 'Checking for update...',
         title: 'Belouga Live Auto-Update',
         detail: 'Belouga Live Auto-Update',
+        closeOnComplete: false,
         style: {
           value: {'background-color': '#00bbf1'}
         },
@@ -259,8 +260,8 @@ async function createJitsiMeetWindow() {
         }
       })
       .on('completed', function() {
+        progressBar.text = 'Update downloaded! Installing...';
         console.info(`completed...`);
-        setImmediate(() => autoUpdater.quitAndInstall());
       })
       .on('aborted', function(value) {
         console.info(`aborted... ${value}`);
@@ -285,8 +286,8 @@ async function createJitsiMeetWindow() {
       });
 
       autoUpdater.on('update-downloaded', (updateInfo) => {
-        progressBar.text = 'Update downloaded! Installing...';
-        progressBar.setCompleted();
+        progressBar.close();
+        setImmediate(() => autoUpdater.quitAndInstall(true, true));
       });
 
 
