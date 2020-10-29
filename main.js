@@ -26,6 +26,7 @@ const path = require('path');
 const URL = require('url');
 const config = require('./app/features/config');
 const { openExternalLink } = require('./app/features/utils/openExternalLink');
+const pkgJson = require('./package.json');
 
 const showDevTools = Boolean(process.env.SHOW_DEV_TOOLS) || (process.argv.indexOf('--show-dev-tools') > -1) || isDev;
 
@@ -153,7 +154,7 @@ function launchMainWindow(mainWindow, indexURL) {
     initPopupsConfigurationMain(mainWindow);
     setupAlwaysOnTopMain(mainWindow);
     setupPowerMonitorMain(mainWindow);
-    setupScreenSharingMain(mainWindow, config.default.appName);
+    setupScreenSharingMain(mainWindow, config.default.appName, pkgJson.build.appId);
 }
 
 /**
