@@ -81,6 +81,8 @@ type State = {
      * If the conference is loading or not.
      */
     isLoading: boolean;
+
+    reLoaded: boolean;
 };
 
 /**
@@ -116,13 +118,16 @@ class Conference extends Component<Props, State> {
         super();
 
         this.state = {
-            isLoading: true
+            isLoading: true,
+            reLoaded: false
         };
 
         this._ref = React.createRef();
 
         this._onIframeLoad = this._onIframeLoad.bind(this);
         this._onVideoConferenceEnded = this._onVideoConferenceEnded.bind(this);
+        this.updateIFrame = this.updateIFrame.bind(this);
+        this.reloadConference = this.reloadConference.bind(this);
     }
 
     /**
@@ -196,17 +201,39 @@ class Conference extends Component<Props, State> {
         }
     }
 
+    reloadConference: (*) => void;
+
+    reloadConference() {
+      const room = this.props.location.state.room;
+      const serverURL = this.props.location.state.serverURL;
+      this.props.dispatch(push('/', {
+            error: false,
+            room,
+            serverURL
+        }));
+      return this.props.dispatch(push('/conference', this.props.location.state));
+    }
+
+    updateIframe: (*) => void;
+
+    updateIFrame(url) {
+      this.setState({
+          reLoaded: true
+      });
+    }
+
     /**
      * Implements React's {@link Component#render()}.
      *
      * @returns {ReactElement}
      */
     render() {
-        return (
+        window.conferenceEl = (
             <Wrapper innerRef = { this._ref }>
                 { this._maybeRenderLoadingIndicator() }
             </Wrapper>
         );
+        return window.conferenceEl;
     }
 
     /**
@@ -225,6 +252,9 @@ class Conference extends Component<Props, State> {
 
         if (tokenData.success) {
           token = tokenData.token;
+          if (tokenData.extraProps.startsWith('#')) {
+            localStorage.setItem('extraProps', tokenData.extraProps.substr(1));
+          }
         } else {
           return this._navigateToHome(
               {

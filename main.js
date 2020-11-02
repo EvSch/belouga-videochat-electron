@@ -5,7 +5,8 @@ const {
     Menu,
     app,
     ipcMain,
-    nativeTheme
+    nativeTheme,
+    session
 } = require('electron');
 const contextMenu = require('electron-context-menu');
 const isDev = require('electron-is-dev');
@@ -23,10 +24,12 @@ const {
     setupScreenSharingMain
 } = require('jitsi-meet-electron-utils');
 const path = require('path');
-const URL = require('url');
+const URLN = require('url');
 const config = require('./app/features/config');
 const { openExternalLink } = require('./app/features/utils/openExternalLink');
 const pkgJson = require('./package.json');
+let urlInfo = {};
+let skipURLCheck = false;
 
 const showDevTools = Boolean(process.env.SHOW_DEV_TOOLS) || (process.argv.indexOf('--show-dev-tools') > -1) || isDev;
 
@@ -177,7 +180,7 @@ async function createJitsiMeetWindow() {
     const basePath = isDev ? __dirname : app.getAppPath();
 
     // URL for index.html which will be our entry point.
-    const indexURL = URL.format({
+    const indexURL = URLN.format({
         pathname: path.resolve(basePath, './build/index.html'),
         protocol: 'file:',
         slashes: true
@@ -216,6 +219,54 @@ async function createJitsiMeetWindow() {
             openExternalLink(url);
         }
     });
+
+    session.defaultSession.webRequest.onBeforeRequest(async (details, callback) => {
+      if (!skipURLCheck && details.resourceType == 'subFrame') {
+        if (details.url.includes('#')) {
+          const reLoaded = await mainWindow.webContents
+                .executeJavaScript(`(conferenceEl._owner.stateNode.state.reLoaded)`, true);
+          if (reLoaded) {
+            console.log("WE RELOADED");
+            mainWindow.webContents
+                  .executeJavaScript(`(conferenceEl._owner.stateNode.reloadConference())`, true);
+            return callback({cancel: true});
+          }
+          console.log(details);
+          const hashProps = details.url.split("#").pop();
+          const params = {};
+          hashProps.split('&').forEach(item => {
+            params[item.split('=')[0]] = item.split('=')[1];
+          });
+          const currentProp = await mainWindow.webContents
+                .executeJavaScript('(localStorage.getItem("extraProps"));', true);
+          await mainWindow.webContents
+                .executeJavaScript('(localStorage.removeItem("extraProps"));', true);
+          if (Object.keys(urlInfo).length === 0) {
+            console.log("Settings first");
+            urlInfo = params;
+          }
+          if (params.jitsi_meet_external_api_id !== undefined && urlInfo.jitsi_meet_external_api_id !== params.jitsi_meet_external_api_id) {
+            urlInfo.jitsi_meet_external_api_id = params.jitsi_meet_external_api_id;
+          }
+          console.log(params);
+          const currentUrlInfo = {...urlInfo, ...params};
+          if (currentProp !== null) {
+            currentUrlInfo[currentProp.split('=')[0]] = currentProp.split('=')[1];
+          }
+          const newUrlParams = new URLSearchParams(currentUrlInfo).toString();
+          const newUrl = new URL(details.url);
+          newUrl.hash = '#' + newUrlParams;
+          console.log(newUrl.toString());
+          skipURLCheck = true;
+          mainWindow.webContents
+                .executeJavaScript(`(document.querySelector("iframe").src = "${newUrl.toString()}");(conferenceEl._owner.stateNode.updateIFrame())`, true);
+          return callback({cancel: true});
+        }
+      }
+      skipURLCheck = false;
+      callback({});
+    })
+
     mainWindow.on('closed', () => {
         mainWindow = null;
     });

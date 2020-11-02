@@ -120,9 +120,9 @@ class HelpButton extends Component<Props, State> {
                     <Item onActivate = { this._onPrivacyClick }>
                         { t('privacyLink') }
                     </Item>
-                    <Item onActivate = { this._onSendFeedbackClick }>
+                    {/*<Item onActivate = { this._onSendFeedbackClick }>
                         { t('sendFeedbackLink') }
-                    </Item>
+                    </Item>*/}
                     <Item onActivate = { this._onAboutClick }>
                         { t('aboutLink') }
                     </Item>
