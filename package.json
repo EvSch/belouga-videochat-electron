@@ -1,6 +1,6 @@
 {
   "name": "belouga-live",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Electron application for Belouga Live",
   "main": "./build/main.js",
   "productName": "Belouga Live",
@@ -30,6 +30,7 @@
       "!app",
       "!main.js"
     ],
+    "afterAllArtifactBuild": "./diff.js",
     "afterSign": "./notarize.js",
     "artifactBuildCompleted": "./notarize-package.js",
     "mac": {
@@ -112,11 +113,11 @@
   "dependencies": {
     "@atlaskit/icon": "^21.1.2",
     "electron-context-menu": "2.0.1",
+    "electron-differential-updater": "github:shoes22/electron-differential-updater#82ace586f4f858e6fa0a67735bc9242bbbc1168c",
     "electron-is-dev": "1.2.0",
     "electron-log": "4.1.1",
     "electron-reload": "1.5.0",
     "electron-store": "5.1.1",
-    "electron-updater": "4.2.5",
     "electron-window-state": "5.0.3",
     "history": "4.10.1",
     "i18next": "19.4.5",
@@ -160,6 +161,7 @@
     "@babel/preset-env": "7.9.0",
     "@babel/preset-flow": "7.9.0",
     "@babel/preset-react": "7.9.4",
+    "@imjs/electron-differential-updater": "^5.1.2",
     "@svgr/webpack": "5.4.0",
     "babel-eslint": "10.0.3",
     "babel-loader": "8.1.0",

@@ -14,7 +14,7 @@ const debug = (() => (
   isDev ? require('electron-debug') : null
 ))();
 const ProgressBar = require('electron-progressbar');
-const { autoUpdater } = require('electron-updater');
+const { autoUpdater } = require('electron-differential-updater');
 const windowStateKeeper = require('electron-window-state');
 const {
     initPopupsConfigurationMain,
@@ -40,8 +40,9 @@ app.commandLine.appendSwitch('disable-site-isolation-trials');
 app.allowRendererProcessReuse = false;
 
 autoUpdater.logger = require('electron-log');
-autoUpdater.logger.transports.file.level = 'info';
+autoUpdater.logger.transports.file.level = 'debug';
 autoUpdater.autoDownload = false;
+autoUpdater.allowPrerelease = true;
 // Enable context menu so things like copy and paste work in input fields.
 contextMenu({
     showLookUpSelection: false,
