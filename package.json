@@ -113,7 +113,7 @@
   "dependencies": {
     "@atlaskit/icon": "^21.1.2",
     "electron-context-menu": "2.0.1",
-    "electron-differential-updater": "github:shoes22/electron-differential-updater#82ace586f4f858e6fa0a67735bc9242bbbc1168c",
+    "electron-differential-updater": "github:shoes22/electron-differential-updater#49d18b5ecbe3c753468b2511303be81233f7db01",
     "electron-is-dev": "1.2.0",
     "electron-log": "4.1.1",
     "electron-reload": "1.5.0",
