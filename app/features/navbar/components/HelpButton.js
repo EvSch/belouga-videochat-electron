@@ -7,7 +7,7 @@ import { compose } from 'redux';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { openDialog } from '../../dialog';
+import { openDialog, hideDialog } from '../../dialog';
 import { SpotlightTarget } from '@atlaskit/onboarding';
 import config from '../../config';
 import { openExternalLink } from '../../utils';
@@ -16,6 +16,10 @@ import { ContactModal } from './ContactModal';
 
 type Props = {
   dispatch: Dispatch<*>;
+
+  _username: string;
+
+  _loggedIn: boolean;
 }
 
 type State = {
@@ -45,6 +49,7 @@ class HelpButton extends Component<Props, State> {
         this._onAboutClick = openExternalLink.bind(undefined, config.aboutURL);
         this._onSourceClick = openExternalLink.bind(undefined, config.sourceURL);
         this._onIconClick = this._onIconClick.bind(this);
+        this._onFeedbackSubmit = this._onFeedbackSubmit.bind(this);
         this._onOpenChange = this._onOpenChange.bind(this);
         this._onPrivacyClick
             = openExternalLink.bind(undefined, config.privacyPolicyURL);
@@ -85,6 +90,8 @@ class HelpButton extends Component<Props, State> {
         });
     }
 
+    _onFeedbackSubmit: (*) => void;
+
     _onPrivacyClick: (*) => void;
 
     _onTermsClick: (*) => void;
@@ -93,7 +100,25 @@ class HelpButton extends Component<Props, State> {
 
     _onSendFeedbackClick() {
       const {  dispatch } = this.props;
-      dispatch(openDialog(withTranslation()(connect()(ContactModal))));
+      dispatch(openDialog(withTranslation()(connect(() => {return {onSubmit: this._onFeedbackSubmit}})(ContactModal))));
+    };
+
+    async _onFeedbackSubmit(event: SyntheticEvent<HTMLFormElement>) {
+        event.preventDefault();
+        const { dispatch } = this.props;
+        const username = this.props._username
+        const form = event.currentTarget.getAttribute('form');
+        const formData = document.getElementById(form).querySelector('textarea').value;
+        const test = await fetch('https://belouga.org/dashboard/submitVideochatHelpRequest', {
+           method: 'POST',
+           headers: {
+             'Content-Type': 'application/json'
+           },
+           body: JSON.stringify({username: username, message: formData})
+          })
+        .then(response => {
+          dispatch(hideDialog());
+        })
     };
 
     /**
@@ -102,8 +127,10 @@ class HelpButton extends Component<Props, State> {
      * @returns {ReactElement}
      */
     render() {
-        const { t } = this.props;
-
+        const { t, _loggedIn } = this.props;
+        let showFeedBack = _loggedIn ? <Item onActivate = { this._onSendFeedbackClick }>
+            { t('sendFeedbackLink') }
+        </Item> : null;
         return (
           <SpotlightTarget
               name = 'help-menu-button'>
@@ -120,9 +147,7 @@ class HelpButton extends Component<Props, State> {
                     <Item onActivate = { this._onPrivacyClick }>
                         { t('privacyLink') }
                     </Item>
-                    {/*<Item onActivate = { this._onSendFeedbackClick }>
-                        { t('sendFeedbackLink') }
-                    </Item>*/}
+                    {showFeedBack}
                     <Item onActivate = { this._onAboutClick }>
                         { t('aboutLink') }
                     </Item>
@@ -136,4 +161,11 @@ class HelpButton extends Component<Props, State> {
     }
 }
 
-export default compose(connect(), withTranslation())(HelpButton);
+function _mapStateToProps(state: Object) {
+    return {
+        _username: state.settings.username,
+        _loggedIn: state.settings.loggedIn
+    };
+}
+
+export default compose(connect(_mapStateToProps), withTranslation())(HelpButton);

@@ -27,7 +27,6 @@ export default (state: {}, action: Object) => {
     }
 
     case OPEN_DIALOG:
-        console.log(action);
         return {
             component: action.component,
             componentProps: action.componentProps,
