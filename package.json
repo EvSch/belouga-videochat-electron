@@ -1,6 +1,6 @@
 {
   "name": "belouga-live",
-  "version": "1.0.4",
+  "version": "1.0.3",
   "description": "Electron application for Belouga Live",
   "main": "./build/main.js",
   "productName": "Belouga Live",
@@ -112,7 +112,7 @@
   "dependencies": {
     "@atlaskit/icon": "^21.1.2",
     "electron-context-menu": "2.0.1",
-    "electron-differential-updater": "github:shoes22/electron-differential-updater#ec8e85632cb4efe4e4ee9989a3f8ed4c3bed82fe",
+    "electron-differential-updater": "github:shoes22/electron-differential-updater#21efb94e62d8ed8b4d75683a1760014330bec12f",
     "electron-is-dev": "1.2.0",
     "electron-log": "4.1.1",
     "electron-reload": "1.5.0",

@@ -40,9 +40,8 @@ app.commandLine.appendSwitch('disable-site-isolation-trials');
 app.allowRendererProcessReuse = false;
 
 autoUpdater.logger = require('electron-log');
-autoUpdater.logger.transports.file.level = 'debug';
+autoUpdater.logger.transports.file.level = 'info';
 autoUpdater.autoDownload = false;
-autoUpdater.allowPrerelease = true;
 // Enable context menu so things like copy and paste work in input fields.
 contextMenu({
     showLookUpSelection: false,
