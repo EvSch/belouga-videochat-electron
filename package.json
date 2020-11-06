@@ -30,7 +30,6 @@
       "!app",
       "!main.js"
     ],
-    "afterAllArtifactBuild": "./diff.js",
     "afterSign": "./notarize.js",
     "artifactBuildCompleted": "./notarize-package.js",
     "mac": {
@@ -113,7 +112,7 @@
   "dependencies": {
     "@atlaskit/icon": "^21.1.2",
     "electron-context-menu": "2.0.1",
-    "electron-differential-updater": "github:shoes22/electron-differential-updater#49d18b5ecbe3c753468b2511303be81233f7db01",
+    "electron-differential-updater": "github:shoes22/electron-differential-updater#ec8e85632cb4efe4e4ee9989a3f8ed4c3bed82fe",
     "electron-is-dev": "1.2.0",
     "electron-log": "4.1.1",
     "electron-reload": "1.5.0",

@@ -335,7 +335,11 @@ async function createJitsiMeetWindow() {
       autoUpdater.on('download-progress', (progressInfo) => {
         progressBar.text = 'Downloading Update...';
         progressBar.value = progressInfo.percent;
-        progressBar.detail = `${(progressInfo.transferred/1000000).toFixed(1)}M of ${(progressInfo.total/1000000).toFixed(1)}M downloaded at ${(progressInfo.bytesPerSecond/1024).toFixed(0)}KB/s`;
+        if (progressInfo.hasOwnProperty('isDiff')) {
+          progressBar.detail = `${progressInfo.transferred} of ${progressInfo.total} updates downloaded`;
+        } else {
+          progressBar.detail = `${(progressInfo.transferred/1000000).toFixed(1)}M of ${(progressInfo.total/1000000).toFixed(1)}M downloaded at ${(progressInfo.bytesPerSecond/1024).toFixed(0)}KB/s`;
+        }
       });
 
       autoUpdater.on('update-downloaded', (updateInfo) => {
